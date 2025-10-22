@@ -1,0 +1,469 @@
+[
+  {
+    "slug": "eitc-earned-income-tax-credit",
+    "name": "EITC (Earned Income Tax Credit)",
+    "benefit_type": null,
+    "country": "United States",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Determine EITC eligibility, 2) File tax return, 3) Claim EITC on Form 1040, 4) Submit required forms, 5) Wait for IRS processing",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "tanf-temporary-assistance-for-needy-families",
+    "name": "TANF (Temporary Assistance for Needy Families)",
+    "benefit_type": null,
+    "country": "United States",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Contact your state TANF office, 2) Complete application (online or in-person), 3) Provide proof of income, assets, household composition, 4) Attend interview, 5) Meet work requirements if approved",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "snap-supplemental-nutrition-assistance-program",
+    "name": "SNAP (Supplemental Nutrition Assistance Program)",
+    "benefit_type": null,
+    "country": "United States",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Locate your state's Food and Nutrition Service website, 2) Complete online or paper application, 3) Provide proof of identity (photo ID), income (pay stubs), expenses (rent receipts, utility bills), 4) Complete interview (phone or in-person), 5) Receive EBT card if approved",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "child-tax-credit-refundable-portion",
+    "name": "Child Tax Credit (Refundable portion)",
+    "benefit_type": null,
+    "country": "United States",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Gather SSNs for qualifying children, 2) Gather SSNs or ITINs for other dependents, 3) Calculate modified adjusted gross income, 4) Determine credit amount, 5) File Form 1040, 6) Claim credit on line 19, 7) Calculate refundable portion on Schedule 8812",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "pm-jay-ayushman-bharat-pradhan-mantri-jan-arogya-yojana",
+    "name": "PM-JAY (Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana)",
+    "benefit_type": null,
+    "country": "India",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Check eligibility at pmjay.gov.in, 2) Visit nearest Common Service Center or empaneled hospital, 3) Provide Aadhaar card and ration card, 4) Get e-card generated, 5) Use at any empaneled hospital for cashless treatment",
+    "eligibility_logic": {
+      "and": [
+        {
+          "==": [
+            {
+              "var": "country"
+            },
+            "IN"
+          ]
+        },
+        {
+          "or": [
+            {
+              "and": [
+                {
+                  "==": [
+                    {
+                      "var": "residence"
+                    },
+                    "rural"
+                  ]
+                },
+                {
+                  "in": [
+                    {
+                      "var": "secc_deprivation"
+                    },
+                    [
+                      "homeless",
+                      "manual_scavenger",
+                      "primitive_tribal",
+                      "legally_released_bonded_labor",
+                      "beggars",
+                      "destitute",
+                      "kuchha_walls_roof",
+                      "no_adult_16_59",
+                      "female_headed_no_adult_male_16_59",
+                      "disabled_no_able_adult",
+                      "sc_st_with_1_room",
+                      "landless_casual_labor"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "and": [
+                {
+                  "==": [
+                    {
+                      "var": "residence"
+                    },
+                    "urban"
+                  ]
+                },
+                {
+                  "in": [
+                    {
+                      "var": "occupation"
+                    },
+                    [
+                      "rag_picker",
+                      "beggar",
+                      "domestic_worker",
+                      "street_vendor",
+                      "construction_worker",
+                      "plumber",
+                      "sanitation_worker",
+                      "sweeper",
+                      "transport_worker",
+                      "shop_worker",
+                      "other_service"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              ">": [
+                {
+                  "var": "household_members_count_female_headed"
+                },
+                0
+              ]
+            },
+            {
+              "some": [
+                {
+                  "var": "household_members"
+                },
+                {
+                  "or": [
+                    {
+                      ">=": [
+                        {
+                          "var": "age"
+                        },
+                        60
+                      ]
+                    },
+                    {
+                      "==": [
+                        {
+                          "var": "disability_status"
+                        },
+                        "disabled"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "!!": [
+            {
+              "var": "aadhaar_number"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "slug": "bolsa-fam-lia-family-allowance-program",
+    "name": "Bolsa Família (Family Allowance Program)",
+    "benefit_type": null,
+    "country": "Brazil",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Register in Cadastro Único (CadÚnico) at local CRAS office, 2) Provide proof of income, family composition, 3) Complete biometric registration (2025 requirement), 4) Wait for eligibility verification, 5) Receive benefit via Caixa Econômica Federal card",
+    "eligibility_logic": {
+      "and": [
+        {
+          "==": [
+            {
+              "var": "country"
+            },
+            "BR"
+          ]
+        },
+        {
+          "or": [
+            {
+              "<=": [
+                {
+                  "var": "per_capita_income_brl"
+                },
+                218
+              ]
+            },
+            {
+              "and": [
+                {
+                  "<=": [
+                    {
+                      "var": "per_capita_income_brl"
+                    },
+                    218
+                  ]
+                },
+                {
+                  "some": [
+                    {
+                      "var": "household_members"
+                    },
+                    {
+                      "and": [
+                        {
+                          "<": [
+                            {
+                              "var": "age"
+                            },
+                            18
+                          ]
+                        },
+                        {
+                          "or": [
+                            {
+                              "==": [
+                                {
+                                  "var": "school_attendance"
+                                },
+                                true
+                              ]
+                            },
+                            {
+                              "<": [
+                                {
+                                  "var": "age"
+                                },
+                                6
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "and": [
+                {
+                  ">=": [
+                    {
+                      "var": "per_capita_income_brl"
+                    },
+                    218.01
+                  ]
+                },
+                {
+                  "<=": [
+                    {
+                      "var": "per_capita_income_brl"
+                    },
+                    436
+                  ]
+                },
+                {
+                  "some": [
+                    {
+                      "var": "household_members"
+                    },
+                    {
+                      "or": [
+                        {
+                          "<": [
+                            {
+                              "var": "age"
+                            },
+                            21
+                          ]
+                        },
+                        {
+                          "==": [
+                            {
+                              "var": "pregnancy_status"
+                            },
+                            "pregnant"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "!!": [
+            {
+              "var": "cadunico_registration"
+            }
+          ]
+        },
+        {
+          "==": [
+            {
+              "var": "biometric_verification_2025"
+            },
+            true
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "slug": "nsip-national-social-investment-programme",
+    "name": "NSIP (National Social Investment Programme)",
+    "benefit_type": null,
+    "country": "Nigeria",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Register on NPVN (National ID/NIN, BVN required), 2) Select intervention (NPower, CCT, GEEP, etc.), 3) Complete online assessment, 4) Wait for selection notification",
+    "eligibility_logic": {
+      "and": [
+        {
+          "==": [
+            {
+              "var": "country"
+            },
+            "NG"
+          ]
+        },
+        {
+          "<": [
+            {
+              "var": "household_income_ngn"
+            },
+            {
+              "var": "poverty_line_2025_ngn"
+            }
+          ]
+        },
+        {
+          "or": [
+            {
+              "some": [
+                {
+                  "var": "household_members"
+                },
+                {
+                  "==": [
+                    {
+                      "var": "pregnancy_status"
+                    },
+                    "pregnant"
+                  ]
+                }
+              ]
+            },
+            {
+              "some": [
+                {
+                  "var": "household_members"
+                },
+                {
+                  "<": [
+                    {
+                      "var": "age"
+                    },
+                    5
+                  ]
+                }
+              ]
+            },
+            {
+              "some": [
+                {
+                  "var": "household_members"
+                },
+                {
+                  ">=": [
+                    {
+                      "var": "age"
+                    },
+                    65
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "!!": [
+            {
+              "var": "national_id_nin"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "slug": "ct-ovc-cash-transfer-for-orphans-and-vulnerable-children",
+    "name": "CT-OVC (Cash Transfer for Orphans and Vulnerable Children)",
+    "benefit_type": null,
+    "country": "Kenya",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Visit local Social Development Office, 2) Complete application with household details, 3) Provide proof of vulnerability (orphan status, disability, elderly caregiver), 4) Undergo community validation, 5) Wait for MIS enrollment",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "pkh-program-keluarga-harapan-family-hope-program",
+    "name": "PKH (Program Keluarga Harapan - Family Hope Program)",
+    "benefit_type": null,
+    "country": "Indonesia",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Register in DTKS (Data Terpadu Kesejahteraan Sosial), 2) Verification by village facilitator, 3) Provide proof of pregnancy, children in school, or elderly household members, 4) Attend health/education facility regularly, 5) Receive quarterly payments via bank/post office",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "eitc-expansion-proposed",
+    "name": "EITC Expansion (proposed)",
+    "benefit_type": null,
+    "country": "United States",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Earn income from work (wages or self-employment), 2) Have investment income less than $10,300, 3) File a tax return, 4) Meet income limits (varies by filing status and number of children), 5) Be 25+ years old if childless, 6) Not be claimed as dependent",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "15-federal-minimum-wage-proposed",
+    "name": "$15 Federal Minimum Wage (proposed)",
+    "benefit_type": null,
+    "country": "United States",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Verify current federal minimum wage is $7.25/hour, 2) Check if state minimum is higher, 3) Report violations to Department of Labor Wage & Hour Division, 4) File complaint if paid below minimum, 5) Seek back wages owed, 6) Know exemptions (tipped workers, students, etc.)",
+    "eligibility_logic": null
+  },
+  {
+    "slug": "pay-equity-enforcement",
+    "name": "Pay Equity Enforcement",
+    "benefit_type": null,
+    "country": "United States",
+    "contact_type": null,
+    "session_status": null,
+    "input_type": null,
+    "description": "1) Document pay discrepancy, 2) Gather evidence of similar work/qualifications, 3) File internal complaint with HR, 4) File EEOC charge within 180/300 days, 5) Participate in investigation, 6) Pursue lawsuit if EEOC issues right-to-sue letter",
+    "eligibility_logic": null
+  }
+]
