@@ -62,7 +62,9 @@ jobs:
             deploy.json
 
       - name: Notify Slack
-if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}        env:
+if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}        
+env:
+    
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           PROD_URL="${{ steps.url.outputs.prod_url }}"
