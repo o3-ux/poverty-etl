@@ -1,0 +1,63 @@
+name: Netlify Deploy & Smoke Test
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-deploy-test:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps & build
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+            if [ -f package-lock.json ] || [ -f pnpm-lock.yaml ] || [ -f yarn.lock ]; then
+              echo "Using project lockfile for reproducible build"
+            fi
+            if [ -f package.json ] && jq -re '.scripts.build?' package.json > /dev/null; then
+              npm run build
+            fi
+          fi
+
+      - name: Install netlify-cli
+        run: npm install -g netlify-cli@17
+
+      - name: Deploy to Netlify (prod)
+        id: deploy
+        run: |
+          DIR="$( [ -d dist ] && echo dist || ([ -d build ] && echo build || echo .) )"
+          netlify deploy --dir "$DIR" --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN" --prod --message "GitHub Action: $GITHUB_SHA" --json > deploy.json
+          echo "deploy_json_path=$(pwd)/deploy.json" >> $GITHUB_OUTPUT
+
+      - name: Extract production URL
+        id: url
+        run: |
+          PROD_URL=$(jq -r '.deploy_url' < deploy.json)
+          echo "prod_url=$PROD_URL" >> $GITHUB_OUTPUT
+          echo "Production URL: $PROD_URL"
+
+      - name: Run smoke test against production URL
+        run: |
+          chmod +x smoke_test.sh
+          ./smoke_test.sh "${{ steps.url.outputs.prod_url }}"
+
+      - name: Upload deploy artifact & logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-deploy-json
+          path: |
+            deploy.json
+
