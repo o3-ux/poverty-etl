@@ -69,7 +69,8 @@ env:
         run: |
           PROD_URL="${{ steps.url.outputs.prod_url }}"
           STATUS="${{ job.status }}"
-          MESSAGE=$(printf 'Netlify deploy %s\nCommit: %s' "$STATUS" "$GITHUB_SHA")
+          MESSAGE=$(printf 'Netlify deploy %s\nComm
+          it: %s' "$STATUS" "$GITHUB_SHA")
           if [ -n "$PROD_URL" ] && [ "$PROD_URL" != "null" ]; then
             MESSAGE=$(printf '%s\nProduction URL: %s' "$MESSAGE" "$PROD_URL")
           fi
