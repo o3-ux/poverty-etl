@@ -65,7 +65,7 @@ jobs:
 if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}        
 env:
     
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           PROD_URL="${{ steps.url.outputs.prod_url }}"
           STATUS="${{ job.status }}"
