@@ -61,12 +61,12 @@ jobs:
           path: |
             deploy.json
 
-      - name: Notify Slack
-  if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}        
-env:
-    
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
+        - name: Notify Slack
+            if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+                env:
+                      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+                          run: |
+                                curl -sS -X POST -H 'Content-type: application/json' --data '{"text":"Netlify deploy ${{ github.repository }} #${{ github.run_number }} on ${{ github.ref_name }}: ${{ job.status }}"}' "$SLACK_WEBHOOK_URL"
           PROD_URL="${{ steps.url.outputs.prod_url }}"
           STATUS="${{ job.status }}"
           MESSAGE=$(printf 'Netlify deploy %s\nComm
