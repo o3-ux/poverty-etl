@@ -3,7 +3,8 @@ name: Netlify Deploy & Smoke Test
 on:
   push:
     branches: [ "main" ]
-
+  workflow_dispatch:
+  
 jobs:
   build-deploy-test:
     runs-on: ubuntu-latest
