@@ -64,8 +64,7 @@ jobs:
 
       - name: Notify Slack
   if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}        
-env:
-              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+env:                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
   ${{ job.status }}"
           MESSAGE=$(printf 'Netlify deploy %s\nComm
