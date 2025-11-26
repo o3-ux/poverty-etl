@@ -63,15 +63,10 @@ jobs:
             deploy.json
 
       - name: Notify Slack
-      - name: Notify Slack
-        if: ${{ secrets.SLACK_WEBHOOK_URL !=  }}
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          MESSAGE=$(printf 'Netlify deploy %s\nComm
-          it: %s' "$STATUS" "$GITHUB_SHA")
-          if [ -n "$PROD_URL" ] && [ "$PROD_URL" != "null" ]; then
-            MESSAGE=$(printf '%s\nProduction URL: %s' "$MESSAGE" "$PROD_URL")
-          fi
-          payload=$(jq -n --arg text "$MESSAGE" '{text: $text}')
-          curl -X POST -H "Content-type: application/json" --data "$payload" "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' \
+               --data '{"text":"Deploy ${{ github.sha }} – ${{ job.status }}"}' \
+               "$SLACK_WEBHOOK_URL"
