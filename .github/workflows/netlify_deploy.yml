@@ -78,8 +78,20 @@ jobs:
 
       - name: Run smoke test against production URL
         run: |
+          set -e
           chmod +x smoke_test.sh
-          ./smoke_test.sh "${{ steps.url.outputs.prod_url }}"
+
+          # Capture production URL from previous step
+          PROD_URL="${{ steps.url.outputs.prod_url }}"
+
+          # Guard: skip if deploy was skipped and no URL is available
+          if [ -z "" ] || [ "" = "null" ]; then
+            echo "No production URL available; skipping smoke test."
+            exit 0
+          fi
+
+          echo "Running smoke test against "
+          ./smoke_test.sh ""
 
       - name: Upload deploy artifact & logs
         uses: actions/upload-artifact@v4
