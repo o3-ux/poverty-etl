@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-  
+
 jobs:
   build-deploy-test:
     runs-on: ubuntu-latest
@@ -38,9 +38,35 @@ jobs:
 
       - name: Deploy to Netlify (prod)
         id: deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          DIR="$( [ -d dist ] && echo dist || ([ -d build ] && echo build || echo .) )"
-          netlify deploy --dir "$DIR" --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN" --prod --message "GitHub Action: $GITHUB_SHA" --json > deploy.json
+          set -e
+          # Determine directory to deploy: prefer dist/, then build/, else repo root
+          DIR="."
+          if [ -d dist ]; then
+            DIR="dist"
+          elif [ -d build ]; then
+            DIR="build"
+          fi
+
+          # Guard: skip deploy if secrets are missing
+          if [ -z "${NETLIFY_AUTH_TOKEN:-}" ] || [ -z "${NETLIFY_SITE_ID:-}" ]; then
+            echo "Netlify secrets missing; skipping deploy."
+            echo '{}' > deploy.json
+            echo "deploy_json_path=$(pwd)/deploy.json" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Deploying $DIR to Netlify site $NETLIFY_SITE_ID"
+          netlify deploy \
+            --prod \
+            --auth "$NETLIFY_AUTH_TOKEN" \
+            --site "$NETLIFY_SITE_ID" \
+            --dir "$DIR" \
+            --message "GitHub Action: ${GITHUB_SHA:-unknown}" \
+            --json > deploy.json
           echo "deploy_json_path=$(pwd)/deploy.json" >> $GITHUB_OUTPUT
 
       - name: Extract production URL
