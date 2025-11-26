@@ -63,10 +63,11 @@ jobs:
             deploy.json
 
       - name: Notify Slack
-  if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}        
-env:    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      run: |
-  ${{ job.status }}"
+      - name: Notify Slack
+        if: ${{ secrets.SLACK_WEBHOOK_URL !=  }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
           MESSAGE=$(printf 'Netlify deploy %s\nComm
           it: %s' "$STATUS" "$GITHUB_SHA")
           if [ -n "$PROD_URL" ] && [ "$PROD_URL" != "null" ]; then
