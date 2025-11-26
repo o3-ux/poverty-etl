@@ -63,10 +63,10 @@ jobs:
             deploy.json
 
       - name: Notify Slack
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
-        env:
+      if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+      env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
+      run: |
           curl -X POST -H 'Content-type: application/json' \
                --data '{"text":"Deploy ${{ github.sha }} – ${{ job.status }}"}' \
                "$SLACK_WEBHOOK_URL"
