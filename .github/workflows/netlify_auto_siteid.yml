@@ -1,0 +1,74 @@
+name: Auto Discover & Store Netlify Site ID
+
+# Manual helper workflow to discover the Netlify Site API ID that
+# corresponds to this repository's slug and save it as the repository
+# secret `NETLIFY_SITE_ID`. Trigger via the `Run workflow` button on
+# GitHub. The job is idempotent: if the secret already exists it exits
+# early.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  discover-and-save-siteid:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      CI_PUSH_TOKEN:      ${{ secrets.CI_PUSH_TOKEN }}
+    steps:
+      - name: Pre-flight checks
+        run: |
+          set -e
+          if [ -z "${NETLIFY_AUTH_TOKEN:-}" ]; then
+            echo "❌ NETLIFY_AUTH_TOKEN secret is missing. Aborting." >&2
+            exit 1
+          fi
+          if [ -z "${CI_PUSH_TOKEN:-}" ]; then
+            echo "❌ CI_PUSH_TOKEN secret is missing. Aborting." >&2
+            exit 1
+          fi
+
+          # Fetch existing secrets list
+          echo "::group::Existing repo secrets"
+          curl -s -H "Authorization: Bearer ${CI_PUSH_TOKEN}" \
+               -H "Accept: application/vnd.github+json" \
+               "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/secrets" \
+            | jq -r '.secrets[].name' > secrets.txt
+          cat secrets.txt
+          echo "::endgroup::"
+
+          if grep -q '^NETLIFY_SITE_ID$' secrets.txt; then
+            echo "✅ NETLIFY_SITE_ID already exists. Nothing to do." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+      - name: Checkout repo (for helper script)
+        uses: actions/checkout@v4
+
+      - name: Install jq & gh CLI
+        run: |
+          sudo apt-get update -yq
+          sudo apt-get install -yq jq
+          GH_VER=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r '.tag_name')
+          curl -sSL https://github.com/cli/cli/releases/download/${GH_VER}/gh_${GH_VER#v}_linux_amd64.tar.gz \
+            | tar xz --strip-components=2 -C /usr/local/bin gh_${GH_VER#v}_linux_amd64/bin/gh
+
+      - name: Discover Site ID
+        id: discover
+        run: |
+          set -e
+          chmod +x netlify_auto_siteid.sh
+          SITE_ID=$(./netlify_auto_siteid.sh || true)
+          if [ -z "$SITE_ID" ]; then
+            echo "❌ Could not auto-discover Site ID." >&2
+            exit 1
+          fi
+          echo "site_id=$SITE_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Store Site ID as repo secret
+        env:
+          GH_TOKEN: ${{ secrets.CI_PUSH_TOKEN }}
+        run: |
+          set -e
+          gh secret set NETLIFY_SITE_ID --body "${{ steps.discover.outputs.site_id }}" --repo "$GITHUB_REPOSITORY"
+          echo "Saved NETLIFY_SITE_ID=${{ steps.discover.outputs.site_id }}" | tee -a "$GITHUB_STEP_SUMMARY"
