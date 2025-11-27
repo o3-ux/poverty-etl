@@ -41,8 +41,8 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          echo "AUTH_SET=$([ -n \"${NETLIFY_AUTH_TOKEN}\" ] && echo yes || echo no) AUTH_LEN=${#NETLIFY_AUTH_TOKEN:-0}"
-          echo "SITE_SET=$([ -n \"${NETLIFY_SITE_ID}\" ] && echo yes || echo no) SITE_LEN=${#NETLIFY_SITE_ID:-0}"
+          echo "AUTH_SET=$([ -n \"${NETLIFY_AUTH_TOKEN}\" ] && echo yes || echo no) AUTH_LEN=${#NETLIFY_AUTH_TOKEN}"
+          echo "SITE_SET=$([ -n \"${NETLIFY_SITE_ID}\" ] && echo yes || echo no) SITE_LEN=${#NETLIFY_SITE_ID}"
 
       - name: Deploy to Netlify (prod)
         id: deploy
